@@ -594,11 +594,11 @@
 
 import { View, Text, Button, Linking, StyleSheet } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import * as MediaLibrary from 'expo-media-library';
+import * as ImagePicker from 'expo-image-picker';
 
 export default function CameraScreen() {
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
-  const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions({ writeOnly: true });
+  const [mediaPermission, requestMediaPermission] = ImagePicker.useMediaLibraryPermissions();
 
   // Still loading permission state from the OS
   if (!cameraPermission || !mediaPermission) {
@@ -626,7 +626,7 @@ export default function CameraScreen() {
     return (
       <View style={styles.container}>
         <Text style={styles.text}>
-          Media library access is required to save scanned tickets.
+          Media library access is required to select and save tickets.
         </Text>
         {mediaPermission.canAskAgain ? (
           <Button title="Grant Media Library Permission" onPress={requestMediaPermission} />
