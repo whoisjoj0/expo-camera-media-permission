@@ -592,13 +592,26 @@
 // });
 // try to design the camera container
 
-import { View, Text, Button, Linking, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { View, Text, Button, Image, Linking, StyleSheet } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 
 export default function CameraScreen() {
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [mediaPermission, requestMediaPermission] = ImagePicker.useMediaLibraryPermissions();
+  const [image, setImage] = useState(null);
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
 
   // Still loading permission state from the OS
   if (!cameraPermission || !mediaPermission) {
@@ -641,6 +654,10 @@ export default function CameraScreen() {
   return (
     <View style={styles.container}>
       <CameraView style={styles.camera} />
+      <View style={styles.controls}>
+        <Button title="Pick Image" onPress={pickImage} />
+        {image && <Image source={{ uri: image }} style={styles.preview} />}
+      </View>
     </View>
   );
 }
@@ -648,5 +665,7 @@ export default function CameraScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   camera: { flex: 1, width: '100%' },
+  controls: { padding: 12, alignItems: 'center' },
+  preview: { width: 120, height: 120, marginTop: 10, borderRadius: 8 },
   text: { textAlign: 'center', marginBottom: 10 },
 });
